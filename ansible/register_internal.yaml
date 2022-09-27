@@ -28,12 +28,12 @@
   when: "'workers' in group_names and inventory_hostname == item.item"
   ansible.builtin.command:
     cmd: "{{ item.stdout }}"
-    creates: /opt/worldprogramming/wpshub-c/var/ca/public/CA.cert.pem
+    creates: /opt/altair/swhub/var/ca/public/CA.cert.pem
   with_items: "{{hostvars[groups['hub'][0]]['workerregs']['results']}}"
 
 - name: Internal TLS certificate installation
   when: "'workers' in group_names"
-  ansible.builtin.command: sudo cp /opt/worldprogramming/wpshub-c/var/ca/public/CA.cert.pem /etc/pki/ca-trust/source/anchors
+  ansible.builtin.command: sudo cp /opt/altair/swhub/var/ca/public/CA.cert.pem /etc/pki/ca-trust/source/anchors
 
 - name: Internal TLS update-ca-trust force-enable
   when: "'workers' in group_names"

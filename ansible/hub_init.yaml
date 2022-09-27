@@ -1,58 +1,54 @@
 - name: Copy hub license
   ansible.builtin.copy:
     src: "license/hub.txt"
-    dest: "/opt/worldprogramming/wpshub-c/var/licence.txt"
+    dest: "/opt/altair/swhub/var/licence.txt"
 - name: Copy hub bootstrap
   ansible.builtin.copy:
     src: "bootstrap"
-    dest: "/opt/worldprogramming/wpshub-c/etc/"
-- name: Copy hub linksessionmgr.d
-  ansible.builtin.copy:
-    src: "linksessionmgr.d"
-    dest: "/opt/worldprogramming/wpshub-c/etc/"
+    dest: "/opt/altair/swhub/etc/"
 - name: Copy hub config
   ansible.builtin.copy:
     src: "config.d"
-    dest: "/opt/worldprogramming/wpshub-c/etc/"
+    dest: "/opt/altair/swhub/etc/"
 - name: Create admin user
   ansible.builtin.template:
     src: templates/adminpassword.yaml.j2
-    dest: /opt/worldprogramming/wpshub-c/etc/bootstrap/adminpassword.yaml
+    dest: /opt/altair/swhub/etc/bootstrap/adminpassword.yaml
     mode: 0644
 - name: Create network config
   ansible.builtin.template:
     src: templates/internalnetwork_custom.yaml.j2
-    dest: /opt/worldprogramming/wpshub-c/etc/config.d/internalnetwork_custom.yaml
+    dest: /opt/altair/swhub/etc/config.d/internalnetwork_custom.yaml
     mode: 0644
 - name: Create auth configuration
   ansible.builtin.template:
     src: templates/auth_zzz.yaml.j2
-    dest: /opt/worldprogramming/wpshub-c/etc/config.d/auth_zzz.yaml
+    dest: /opt/altair/swhub/etc/config.d/auth_zzz.yaml
     mode: 0644
 - name: Create database configuration
   ansible.builtin.template:
     src: templates/database_custom.yaml.j2
-    dest: /opt/worldprogramming/wpshub-c/etc/config.d/database_custom.yaml
+    dest: /opt/altair/swhub/etc/config.d/database_custom.yaml
     mode: 0644
 - name: Create s3 configuration
   ansible.builtin.template:
     src: templates/s3_custom.yaml.j2
-    dest: /opt/worldprogramming/wpshub-c/etc/config.d/s3_custom.yaml
+    dest: /opt/altair/swhub/etc/config.d/s3_custom.yaml
     mode: 0644
 - name: Create ingress configuration
   ansible.builtin.template:
     src: templates/ingress_custom.yaml.j2
-    dest: /opt/worldprogramming/wpshub-c/etc/config.d/ingress_custom.yaml
+    dest: /opt/altair/swhub/etc/config.d/ingress_custom.yaml
     mode: 0644
 - name: Disable CA Service
   ansible.builtin.copy:
     src: templates/casvc_custom.yaml
-    dest: /opt/worldprogramming/wpshub-c/etc/config.d/casvc_custom.yaml
+    dest: /opt/altair/swhub/etc/config.d/casvc_custom.yaml
     mode: 0644
   when: ca_certs == "supplied"
 - name: Create hubctl symlink
   ansible.builtin.file:
-    src: /opt/worldprogramming/wpshub-c/bin/hubctl
+    src: /opt/altair/swhub/bin/hubctl
     dest: /usr/local/bin/hubctl
     owner: root
     group: root

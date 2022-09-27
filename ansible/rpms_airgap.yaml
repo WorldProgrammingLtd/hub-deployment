@@ -14,39 +14,9 @@
     group: root
     mode: '0644'
   with_items:
-    - 
-    - wpshub-shared-config-0.1.42-2.x86_64.rpm
-    - wpshub-0.1.42-2.x86_64.rpm
-    - wpshub-auth-1.6.14-2.x86_64.rpm 
-    - wpshub-base-0.1.5-2.x86_64.rpm
-    - wpshub-ca-1.2.8-2.x86_64.rpm
-    - wpshub-ca-worker-1.2.8-2.x86_64.rpm
-    - wpshub-config-0.1.42-2.x86_64.rpm
-    - wpshub-configtmpl-1.2.7-2.x86_64.rpm
-    - wpshub-data-access-1.5.11-2.x86_64.rpm
-    - wpshub-docs-1.3.19-2.x86_64.rpm
-    - wpshub-envoy-1.1.6-2.x86_64.rpm 
-    - wpshub-hubctl-1.4.12-2.x86_64.rpm
-    - wpshub-ingressctrl-1.12.9-2.x86_64.rpm 
-    - wpshub-link-server-1.25.7-2.x86_64.rpm 
-    - wpshub-management-1.4.11-2.x86_64.rpm 
-    - wpshub-minio-cfg-1.2.4-2.x86_64.rpm 
-    - wpshub-nats-1.1.6-2.x86_64.rpm 
-    - wpshub-nginx-1.2.7-2.x86_64.rpm
-    - wpshub-nomad-plugin-1.3.6-2.x86_64.rpm
-    - wpshub-nomad-1.2.6-2.x86_64.rpm
-    - wpshub-ondemand-api-1.12.9-2.x86_64.rpm
-    - wpshub-pipeline-cli-1.8.8-2.x86_64.rpm
-    - wpshub-pipelines-1.8.8-2.x86_64.rpm
-    - wpshub-portal-0.2.3-2.x86_64.rpm
-    - wpshub-postgres-1.2.5-2.x86_64.rpm
-   # - wpshub-postgres-repo-1.1.3-2.x86_64.rpm
-   # - wpshub-namespaces-1.1.1-2.x86_64.rpm 
-    - wpshub-rbac-1.4.9-2.x86_64.rpm
-    - wpshub-webdav-0.1.7-2.x86_64.rpm
-    - wpshub-worker-0.1.42-2.x86_64.rpm
-    - wpshub-worker-config-0.1.42-2.x86_64.rpm
-- name: Copy WPS rpm
+    - swhub_2.0.22.448-1_x86_64.rpm
+    - swhub-worker_2.0.22.448-1_x86_64.rpm
+- name: Copy SLC rpm
   ansible.builtin.copy:
     src: "rpms/{{ item }}"
     dest: "{{ rpmsdirectory }}/{{ item }}"

@@ -531,3 +531,6 @@ FodyWeavers.xsd
 
 **/.terraform.lock.hcl
 terraform/*/hosts
+ansible/hosts
+ansible/license/
+ansible/rpms/

@@ -4,9 +4,9 @@
     - vars/ldap.yaml
     - vars/common.yaml
   vars:
-    wps_rpm: "wps-5.0.0.2.1163_ea2_maintenance-1.x86_64.rpm"
-    worker_rpm: "wpshub-worker"
-    hub_rpm: "wpshub"
+    wps_rpm: "wps-5.0.0.3.2142_ea3_release-1.x86_64.rpm"
+    worker_rpm: "swhub-worker"
+    hub_rpm: "swhub"
     bootstrap_params: "{{ '--nointernaltls' if ca_certs != 'internal' else ''}}"
   tasks:
   - name: Install tasks

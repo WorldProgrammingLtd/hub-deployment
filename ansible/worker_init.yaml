@@ -1,27 +1,27 @@
-- name: Copy WPS license
+- name: Copy SLC license
   ansible.builtin.copy:
     src: "license/setinit.wps"
     dest: "/tmp"
-- name: License WPS
+- name: License SLC
   ansible.builtin.command:
     cmd: /opt/worldprogramming/wps-5/bin/wps -setinit /tmp/setinit.wps
     creates: /var/lib/worldprogramming/WPS/5/setinit.dat
-- name: Copy wps install information
+- name: Copy SLC install information
   ansible.builtin.copy:
-    src: "worker.config/wps_installs.yaml"
-    dest: "/opt/worldprogramming/wpshub-c/etc/wps_installs.yaml"
+    src: "worker.config/slc_installs.yaml"
+    dest: "/opt/altair/swhub/etc/slc_installs.yaml"
 - name: Copy nomad config
   ansible.builtin.copy:
     src: "worker.config/90-gc-config.hcl"
-    dest: "/opt/worldprogramming/wpshub-c/etc/nomad.d/90-gc-config.hcl"
+    dest: "/opt/altair/swhub/etc/nomad.d/90-gc-config.hcl"
 - name: Create network config
   ansible.builtin.template:
     src: internalnetwork_custom.yaml.j2
-    dest: /opt/worldprogramming/wpshub-c/etc/config.d/internalnetwork_custom.yaml
+    dest: /opt/altair/swhub/etc/config.d/internalnetwork_custom.yaml
     mode: 0644
 - name: Create hubctl symlink
   ansible.builtin.file:
-    src: /opt/worldprogramming/wpshub-c/bin/hubctl
+    src: /opt/altair/swhub/bin/hubctl
     dest: /usr/local/bin/hubctl
     owner: root
     group: root
