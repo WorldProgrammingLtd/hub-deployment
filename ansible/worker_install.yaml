@@ -1,5 +1,5 @@
 - name: Installing the worker rpm files
   yum:
-    name: ["{{ worker_rpm }}", 'wps-5']
+    name: ["{{ worker_rpm }}", "{{ slc_rpm }}"]
     state: latest
     update_cache: true

@@ -13,21 +13,47 @@ Licenses: place a hub.txt and a setinit.wps in the license/ folder
 
 Then run all.sh or ansible-playbook main.yaml.
 
-## Hosts example
+## Hosts example (AWS)
 
 ```
 [all:vars]
+cloud_provider = aws
 ingress_url = https://hub.test.wpscloud.co.uk
-shared_store_ip = 172.17.2.31
+shared_store_endpoint = 172.17.2.31:/
 db_host = test-hub-db.calypti53pcp.eu-west-2.rds.amazonaws.com
 db_name = testhub
 db_user = hubdb
 db_password = shadjg7ad89hjklasdfgbhjkl
 s3_endpoint = s3.amazonaws.com
-s3_accessKeyId = AKIAVSPH6RVLN6J
-s3_secretAccessKey = RpbPHWt5ucT7PexRy+/X4F5A/Ykf
+s3_access_key_id = AKIAVSPH6RVLN6J
+s3_secret_access_key = RpbPHWt5ucT7PexRy+/X4F5A/Ykf
 s3_bucket = test-hubdata
 s3_region = eu-west-2
+
+[hub]
+1.2.3.4 ansible_user=abc private_name=hubvm.test.wpscloud.co.uk
+
+[workers]
+2.3.4.5 ansible_user=abc private_name=worker0.test.wpscloud.co.uk
+2.3.4.6 ansible_user=abc private_name=worker1.test.wpscloud.co.uk
+```
+
+## Hosts example (Azure)
+
+```
+[all:vars]
+cloud_provider = azure
+ingress_url = https://hub.test.wpscloud.co.uk
+shared_store_endpoint = hub-test-store.file.core.windows.net:/hub-test-store/hub-test-shared-store
+db_host = hub-test-db.postgres.database.azure.com
+db_name = testhub
+db_user = hubdb
+db_password = sh2djg7ad89hjklasdfgbhjkl
+azure_storage_endpoint = https://hub-test.blob.core.windows.net/
+azure_storage_account_name = hub-test
+azure_storage_access_key = Sx5p8D1iOVcMrhPGCV3iZZI2pB6Or6aSx5p8D1iOVcMrhPGCV3iZZI2pB6Or6a==
+azure_storage_container = test-hubdata
+azure_storage_region = westeurope
 
 [hub]
 1.2.3.4 ansible_user=abc private_name=hubvm.test.wpscloud.co.uk
@@ -43,11 +69,14 @@ You must set all appropriate variables in vars/common.yaml, either in that file 
 
 vars/ldap.yaml should be setup if you'd like ldap integration.
 
+vars/license.yaml you must set the license type either a1 (for altair units) or
+alm (for license manager). See vars/license.yaml for more details.
+
 # Local Postgres Install
 
 This is optional. This currently only supports install using local .RPM files. To use this define your database variables in /vars/common.yaml:
 
-db_host, db_name, db_user, db_password, db_sslmode
+db_host, db_name, db_user, db_password, db_ssl_mode
 
 Define a host for postgresql in your hosts file:
 
@@ -72,7 +101,7 @@ Make sure that the files referenced in postgres_install.yaml match the files tha
 
 This is optional. This currently only supports install using local binary file. To use this define your database variables in /vars/common.yaml:
 
-s3_useIam, s3_insecure, s3_endpoint, s3_accessKeyId, secretAccessKey, s3_bucket, s3_region
+s3_use_iam, s3_insecure, s3_endpoint, s3_access_key_id, secret_access_key, s3_bucket, s3_region
 
 Define a host for seaweedfs in your hosts file:
 

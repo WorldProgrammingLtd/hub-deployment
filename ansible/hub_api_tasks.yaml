@@ -1,0 +1,22 @@
+- name: Get hub admin user id
+  ansible.builtin.uri:
+    url: http://localhost:9090/api/v2/auth/me
+    user: "{{admin.username}}"
+    password: "{{admin.password}}"
+    force_basic_auth: true
+    body_format: json
+    return_content: true
+  register: hub_res
+
+- name: Configure the hub admin default linux username and home directory
+  ansible.builtin.uri:
+    url: http://localhost:9090/api/v2/auth/users/{{hub_res.json._id}}
+    method: PATCH
+    user: "{{admin.username}}"
+    password: "{{admin.password}}"
+    force_basic_auth: true
+    body_format: json
+    body: |-
+      [{ "op": "add", "path": "/unixHomeDirectory", "value":"{{ admin.linux_home_dir }}"}, { "op": "add", "path":"/unixUserName", "value":"{{ admin.linux_username }}" }]
+  when: "(hub_res.json._id | length > 0) and (hub_res.json.unixUserName | length == 0)"
+

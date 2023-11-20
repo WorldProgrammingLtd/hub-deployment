@@ -1,59 +1,106 @@
-- name: Copy hub license
-  ansible.builtin.copy:
-    src: "license/hub.txt"
-    dest: "/opt/altair/swhub/var/licence.txt"
+- name: Check for existing Hub auth token (a1 auth)
+  ansible.builtin.shell: |-
+    cat ~/.altair_licensing/*/altair_hostedhwu.cfg 2>/dev/null | head -n 1 | cut -d'=' -f 2
+  register: existing_auth_result
+  when: license.type == 'a1'
+  changed_when: existing_auth_result.stdout | length > 0
+
+- ansible.builtin.debug:
+    msg: "Hub Auth Token: {{ existing_auth_result.stdout }}"
+
+- name: Generate Hub auth token (a1 auth)
+  ansible.builtin.shell: |-
+    /opt/altair/slchub/bin/almutil -a1auth -anyhost -code {{ license.auth_code }} \
+    | tail -n 1 | cut -d':' -f 2 | sed -e 's/^\s*//'
+  register: new_auth_result
+  failed_when: "'ERROR' in new_auth_result.stderr"
+  when: license.type == 'a1' and (existing_auth_result.stdout | length == 0) and (license.auth_code | length > 0)
+
+- name: Register auth token variable
+  ansible.builtin.set_fact:
+    auth_token: "{{ existing_auth_result.stdout | default('') + new_auth_result.stdout | default('') }}"
+
+- name: Copy hub license config
+  ansible.builtin.template:
+    src: templates/licence.yaml.j2
+    dest: /opt/altair/slchub/etc/config.d/licence.yaml
+    mode: 0640
+  vars:
+    license_type: "{{ license.type }}"
+    auth_token: "{{ auth_token }}"
+    license_path: "{{ license.license_path | default('') }}"
+
 - name: Copy hub bootstrap
   ansible.builtin.copy:
     src: "bootstrap"
-    dest: "/opt/altair/swhub/etc/"
+    dest: "/opt/altair/slchub/etc/"
+
 - name: Copy hub config
   ansible.builtin.copy:
     src: "config.d"
-    dest: "/opt/altair/swhub/etc/"
+    dest: "/opt/altair/slchub/etc/"
+
 - name: Create admin user
   ansible.builtin.template:
     src: templates/adminpassword.yaml.j2
-    dest: /opt/altair/swhub/etc/bootstrap/adminpassword.yaml
+    dest: /opt/altair/slchub/etc/bootstrap/adminpassword.yaml
     mode: 0644
+
 - name: Create network config
   ansible.builtin.template:
     src: templates/internalnetwork_custom.yaml.j2
-    dest: /opt/altair/swhub/etc/config.d/internalnetwork_custom.yaml
+    dest: /opt/altair/slchub/etc/config.d/internalnetwork_custom.yaml
     mode: 0644
+
 - name: Create auth configuration
   ansible.builtin.template:
     src: templates/auth_zzz.yaml.j2
-    dest: /opt/altair/swhub/etc/config.d/auth_zzz.yaml
+    dest: /opt/altair/slchub/etc/config.d/auth_zzz.yaml
     mode: 0644
+
 - name: Create database configuration
   ansible.builtin.template:
     src: templates/database_custom.yaml.j2
-    dest: /opt/altair/swhub/etc/config.d/database_custom.yaml
+    dest: /opt/altair/slchub/etc/config.d/database_custom.yaml
     mode: 0644
+
 - name: Create s3 configuration
   ansible.builtin.template:
     src: templates/s3_custom.yaml.j2
-    dest: /opt/altair/swhub/etc/config.d/s3_custom.yaml
+    dest: /opt/altair/slchub/etc/config.d/object_store_custom.yaml
     mode: 0644
+  when: s3_endpoint is defined
+
+- name: Create azure storage configuration
+  ansible.builtin.template:
+    src: templates/azure_storage_custom.yaml.j2
+    dest: /opt/altair/slchub/etc/config.d/object_store_custom.yaml
+    mode: 0644
+  when: azure_storage_endpoint is defined
+
 - name: Create ingress configuration
   ansible.builtin.template:
     src: templates/ingress_custom.yaml.j2
-    dest: /opt/altair/swhub/etc/config.d/ingress_custom.yaml
+    dest: /opt/altair/slchub/etc/config.d/ingress_custom.yaml
     mode: 0644
+
 - name: Disable CA Service
   ansible.builtin.copy:
     src: templates/casvc_custom.yaml
-    dest: /opt/altair/swhub/etc/config.d/casvc_custom.yaml
+    dest: /opt/altair/slchub/etc/config.d/casvc_custom.yaml
     mode: 0644
   when: ca_certs == "supplied"
+
 - name: Create hubctl symlink
   ansible.builtin.file:
-    src: /opt/altair/swhub/bin/hubctl
+    src: /opt/altair/slchub/bin/hubctl
     dest: /usr/local/bin/hubctl
     owner: root
     group: root
     state: link
+
 - name: Run dbmigrate
   ansible.builtin.command: /usr/local/bin/hubctl dbmigrate
+
 - name: Run bootstrap
   ansible.builtin.command: "/usr/local/bin/hubctl bootstrap {{ bootstrap_params }}"

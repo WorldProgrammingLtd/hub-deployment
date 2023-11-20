@@ -37,10 +37,10 @@ resource "local_file" "ansible_hosts" {
 	db_name = "${var.prefix}hub"
 	db_user = "${var.dbusername}"
 	db_password = "${var.dbpassword}"
-	s3_useIam = "${var.use_iam_for_s3}"
+	s3_use_iam = "${var.use_iam_for_s3}"
 	s3_endpoint = "s3.amazonaws.com"
-	s3_accessKeyId = aws_iam_access_key.hub-s3.id
-	s3_secretAccessKey = aws_iam_access_key.hub-s3.secret
+	s3_access_key_id = aws_iam_access_key.hub-s3.id
+	s3_secret_access_key = aws_iam_access_key.hub-s3.secret
 	s3_bucket = aws_s3_bucket.hubdata.bucket
 	s3_region = "${var.region}"
   })

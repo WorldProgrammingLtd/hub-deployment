@@ -1,3 +1,7 @@
 ingress:
+  tls:
+    enabled: true
+    certFile:
+    keyFile:
   url: {{ ingress_url }}
   port: {{ ingress_port | default('9090', true) }}

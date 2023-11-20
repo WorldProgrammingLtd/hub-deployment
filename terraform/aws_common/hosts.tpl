@@ -1,15 +1,15 @@
 [all:vars]
 ingress_url = ${ingress_url}
-shared_store_ip = ${shared_store_ip}
+shared_store_endpoint = ${shared_store_ip}:/
 db_host = ${db_host}
 db_name = ${db_name}
 db_user = ${db_user}
 db_password = ${db_password}
-db_sslMode = require
-s3_useIam = ${s3_useIam}
+db_ssl_mode = require
+s3_use_iam = ${s3_use_iam}
 s3_endpoint = ${s3_endpoint}
-s3_accessKeyId = ${s3_accessKeyId}
-s3_secretAccessKey = ${s3_secretAccessKey}
+s3_access_key_id = ${s3_access_key_id}
+s3_secret_access_key = ${s3_secret_access_key}
 s3_bucket = ${s3_bucket}
 s3_region = ${s3_region}
 s3_insecure = false

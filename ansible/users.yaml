@@ -1,6 +1,6 @@
-- name: Add builtin wpsdev user
+- name: Add builtin slc user
   ansible.builtin.user:
-    name: wpsdev
-    home: /home/wpsdev
+    name: "{{ admin.linux_username }}"
+    home: "{{ admin.linux_home_dir }}"
     group: users
     uid: 15003

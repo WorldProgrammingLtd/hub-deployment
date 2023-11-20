@@ -19,7 +19,7 @@
   when: rpm_source != "airgapped"
   ansible.builtin.include_tasks: rpms_internet.yaml
 - name: Shared Store setup
-  when: shared_store_ip is defined
+  when: shared_store_endpoint is defined
   ansible.builtin.include_tasks: sharedstore.yaml
 - name: Create CA for selfsigned
   when: "ca_certs == 'selfsigned'"
