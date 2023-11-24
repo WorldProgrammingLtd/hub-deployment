@@ -20,24 +20,44 @@
   ansible.builtin.set_fact:
     auth_token: "{{ existing_auth_result.stdout | default('') + new_auth_result.stdout | default('') }}"
 
-- name: Copy SLC install information (For AltairOne Units)
-  ansible.builtin.command:
-    cmd: "hubctl slcinstall add /opt/altair/slc/2024"
-    creates: "/opt/altair/slchub/etc/slc_installs.yaml"
+- name: Check for existing SLC install (For AltairOne Units)
+  ansible.builtin.shell: |-
+    hubctl slcinstall list | awk '{print $1}' | tail -n +3 \
+    | grep /opt/altair/slc/2024
+  register: a1_slc_install
   environment:
     ALM_HHWU: "TRUE"
     ALM_HHWU_TOKEN: "{{ auth_token }}"
   when: license.type == 'a1'
   become: true
 
-- name: Copy SLC install information (For ALM)
+- name: Copy SLC install information (For AltairOne Units)
   ansible.builtin.command:
     cmd: "hubctl slcinstall add /opt/altair/slc/2024"
-    creates: "/opt/altair/slchub/etc/slc_installs.yaml"
+  environment:
+    ALM_HHWU: "TRUE"
+    ALM_HHWU_TOKEN: "{{ auth_token }}"
+  when: license.type == 'a1' and (a1_slc_install.stdout | length == 0)
+  become: true
+
+- name: Check for existing SLC install (For ALM)
+  ansible.builtin.shell: |-
+    hubctl slcinstall list | awk '{print $1}' | tail -n +3 \
+    | grep /opt/altair/slc/2024
+  register: alm_slc_install
   environment:
     ALM_HHWU: "FALSE"
     ALTAIR_LICENSE_PATH: "{{ license.license_path }}"
   when: license.type == 'alm'
+  become: true
+
+- name: Copy SLC install information (For ALM)
+  ansible.builtin.command:
+    cmd: "hubctl slcinstall add /opt/altair/slc/2024"
+  environment:
+    ALM_HHWU: "FALSE"
+    ALTAIR_LICENSE_PATH: "{{ license.license_path }}"
+  when: license.type == 'alm' and (alm_slc_install.stdout | length == 0)
   become: true
 
 - name: Copy nomad plugin config with licensing env
