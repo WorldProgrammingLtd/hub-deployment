@@ -9,17 +9,6 @@ resource "azurerm_storage_account" "shared-store" {
   # nfsv3_enabled             = true
   enable_https_traffic_only = false
 
-  network_rules {
-    default_action             = "Deny"
-    bypass                     = ["None"]
-    ip_rules                   = split(",", var.setup_from_address_range)
-    virtual_network_subnet_ids = [azurerm_subnet.vms.id]
-
-    private_link_access {
-      endpoint_resource_id = azurerm_subnet.vms.id
-    }
-  }
-
   share_properties {
     retention_policy {
       days = 7
@@ -32,6 +21,15 @@ resource "azurerm_storage_account" "shared-store" {
       tags
     ]
   }
+}
+
+resource "azurerm_storage_account_network_rules" "shared-store" {
+  storage_account_id = azurerm_storage_account.shared-store.id
+
+  default_action             = "Deny"
+  bypass                     = ["None"]
+  ip_rules                   = split(",", var.setup_from_address_range)
+  virtual_network_subnet_ids = [azurerm_subnet.vms.id]
 }
 
 resource "azurerm_storage_share" "shared-store" {
