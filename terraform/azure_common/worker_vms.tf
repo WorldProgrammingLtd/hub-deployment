@@ -20,7 +20,7 @@ resource "azurerm_network_security_group" "worker" {
   security_rule {
     name                       = "nomadrpc"
     description                = "Nomad RPC"
-    priority                   = 300
+    priority                   = 210
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -33,7 +33,7 @@ resource "azurerm_network_security_group" "worker" {
   security_rule {
     name                       = "worker"
     description                = "Worker on demand"
-    priority                   = 400
+    priority                   = 220
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
