@@ -1,6 +1,9 @@
 - name: Worker init
   ansible.builtin.include_tasks: worker_init.yaml
   when: "'workers' in group_names"
+- name: Worker optional components
+  ansible.builtin.include_tasks: worker_optional.yaml
+  when: "'workers' in group_names"
 - name: hub init
   ansible.builtin.include_tasks: hub_init.yaml
   when: "'hub' in group_names"

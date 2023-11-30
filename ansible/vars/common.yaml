@@ -36,3 +36,23 @@ ca_certs: internal
 ldap_enabled: false
 # Passphrase for when we are selfsigining certificates only.
 secret_ca_passphrase: tzAXOUCix9Db9CFBAthja
+
+# This is required incase of installing a newer python, so ansible will
+# continue to use the system default python
+ansible_python_interpreter: /usr/bin/python3
+
+# Install optional components & packages:
+optional:
+  python:
+    install: false
+    version: "3.8"
+    packages:
+      - numpy
+      - pandas
+      - matplotlib
+  r:
+    install: false
+    packages:
+      - randomForest
+      - jsonlite
+      - chron

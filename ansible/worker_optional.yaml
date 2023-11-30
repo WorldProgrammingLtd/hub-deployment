@@ -1,0 +1,58 @@
+- name: Installing Python {{optional.python.version}}
+  ansible.builtin.yum:
+    name:
+      # python packages for alma are named "python38", "python39" etc
+      # so remove "." from given version
+      - python{{optional.python.version | regex_replace('\\.', '')}}
+      - dejavu-sans-fonts
+  when: optional.python.install
+  become: yes
+
+- name: Install Python Packages
+  ansible.builtin.pip:
+    name: "{{optional.python.packages}}"
+    # Use the correct pip for the version of python installed
+    executable: /usr/bin/pip{{optional.python.version}}
+    extra_args: "--no-cache-dir"
+  when: optional.python.install
+  become: yes
+
+- name: Installing R Dependencies - Enable AlmaLinux PowerTools repo
+  community.general.ini_file:
+    path:       /etc/yum.repos.d/almalinux-powertools.repo
+    section:    powertools
+    option:     enabled
+    value:      "1"
+    create:     no
+  when: optional.r.install
+  become: yes
+
+- name: Install R Dependencies - Install EPEL Release Repo
+  ansible.builtin.yum:
+    name: epel-release
+    update_cache: true
+  when: optional.r.install
+  become: yes
+
+- name: Install R Dependencies - R Package Install Script
+  ansible.builtin.copy:
+    src: files/install_r_package.sh
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: '0755'
+  when: optional.r.install
+  become: yes
+
+- name: Install R
+  ansible.builtin.yum:
+    name: R
+    update_cache: true
+  when: optional.r.install
+  become: yes
+
+- name: Install R Packages
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/install_r_package.sh {{ optional.r.packages | join(' ') }}"
+  when: optional.r.install
+  become: yes
