@@ -4,12 +4,7 @@ resource "azurerm_storage_account" "hubdata" {
   resource_group_name      = azurerm_resource_group.rg.name
   account_tier             = "Standard"
   account_replication_type = "LRS"
-
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
+  tags                     = var.tags
 }
 
 resource "azurerm_storage_account_network_rules" "hubdata" {

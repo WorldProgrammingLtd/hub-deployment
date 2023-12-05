@@ -8,6 +8,7 @@ resource "azurerm_storage_account" "shared-store" {
   # is_hns_enabled            = true
   # nfsv3_enabled             = true
   enable_https_traffic_only = false
+  tags                      = var.tags
 
   share_properties {
     retention_policy {

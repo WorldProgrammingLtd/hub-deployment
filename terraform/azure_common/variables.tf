@@ -70,3 +70,8 @@ variable "create_ldap_example_vm" {
   description = "Create an example open ldap vm (not for production use)"
   default = false
 }
+
+variable "tags" {
+  description = "Tags to be added to created resources (optional)"
+  default = {}
+}

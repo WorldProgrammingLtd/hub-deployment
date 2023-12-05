@@ -1,6 +1,7 @@
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}"
   location = "${var.region}"
+  tags     = var.tags
 }
 
 resource "azurerm_virtual_network" "vn" {
@@ -8,6 +9,7 @@ resource "azurerm_virtual_network" "vn" {
   address_space       = ["172.17.0.0/16"]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  tags                = var.tags
 }
 
 resource "azurerm_subnet" "lb" {
@@ -48,5 +50,6 @@ resource "azurerm_ssh_public_key" "common-auth" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   public_key          = "${var.ssh_public_key}"
+  tags                = var.tags
 }
 

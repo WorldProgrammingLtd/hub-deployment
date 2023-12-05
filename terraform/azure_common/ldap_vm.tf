@@ -4,46 +4,53 @@ resource "azurerm_network_security_group" "ldap" {
   name                = "${var.prefix}-ldap"
   location            = "${azurerm_resource_group.rg.location}"
   resource_group_name = "${azurerm_resource_group.rg.name}"
+  tags                = var.tags
 
   # SSH access for setup
   security_rule {
-    name                       = "ssh"
-    description                = "SSH from host"
-    priority                   = 200
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "22"
-    source_address_prefixes    = split(",", var.setup_from_address_range)
-    destination_address_prefix = "*"
+    name                         = "ssh"
+    description                  = "SSH from host"
+    priority                     = 200
+    direction                    = "Inbound"
+    access                       = "Allow"
+    protocol                     = "Tcp"
+    source_port_range            = "*"
+    destination_port_range       = "22"
+    source_address_prefix        = ""
+    source_address_prefixes      = split(",", var.setup_from_address_range)
+    destination_address_prefix   = "*"
+    destination_address_prefixes = []
   }
 
   security_rule {
-    name                       = "ldap"
-    description                = "LDAP"
-    priority                   = 700
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "3268"
-    source_address_prefixes    = azurerm_virtual_network.vn.address_space
-    destination_address_prefix = "*"
+    name                         = "ldap"
+    description                  = "LDAP"
+    priority                     = 700
+    direction                    = "Inbound"
+    access                       = "Allow"
+    protocol                     = "Tcp"
+    source_port_range            = "*"
+    destination_port_range       = "3268"
+    source_address_prefix        = ""
+    source_address_prefixes      = azurerm_virtual_network.vn.address_space
+    destination_address_prefix   = "*"
+    destination_address_prefixes = []
   }
 
   # outbound internet access
   security_rule {
-    name                       = "outbound"
-    description                = "Allow all outbound"
-    priority                   = 100
-    direction                  = "Outbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
+    name                         = "outbound"
+    description                  = "Allow all outbound"
+    priority                     = 100
+    direction                    = "Outbound"
+    access                       = "Allow"
+    protocol                     = "Tcp"
+    source_port_range            = "*"
+    destination_port_range       = "*"
+    source_address_prefix        = "*"
+    source_address_prefixes      = []
+    destination_address_prefix   = "*"
+    destination_address_prefixes = []
   }
 }
 

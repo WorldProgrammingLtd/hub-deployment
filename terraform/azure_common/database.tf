@@ -1,6 +1,7 @@
 resource "azurerm_private_dns_zone" "hubdb-dns-zone" {
   name                = "${var.prefix}-hub-db-private.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.rg.name
+  tags                = var.tags
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "hubdb-dns-zone-vn-link" {
@@ -8,6 +9,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "hubdb-dns-zone-vn-link
   private_dns_zone_name = azurerm_private_dns_zone.hubdb-dns-zone.name
   virtual_network_id    = azurerm_virtual_network.vn.id
   resource_group_name   = azurerm_resource_group.rg.name
+  tags                  = var.tags
 }
 
 resource "azurerm_postgresql_flexible_server" "hubdb" {
@@ -20,6 +22,7 @@ resource "azurerm_postgresql_flexible_server" "hubdb" {
   administrator_login    = "${var.dbusername}"
   administrator_password = "${var.dbpassword}"
   zone                   = "2"
+  tags                   = var.tags
 
   storage_mb = 32768
 
