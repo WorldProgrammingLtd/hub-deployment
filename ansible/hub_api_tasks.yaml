@@ -22,3 +22,26 @@
       [{ "op": "add", "path": "/unixHomeDirectory", "value":"{{ admin.linux_home_dir }}"}, { "op": "add", "path":"/unixUserName", "value":"{{ admin.linux_username }}" }]
   when: "(hub_res.json['unixUserName'] is not defined)"
 
+- name: Get hub excecution profile id
+  ansible.builtin.uri:
+    url: http://localhost:{{ ingress_port | default('9090', true) }}/api/v2/execution-profiles/execprofiles?filter[name][EQ]=Standard
+    user: "{{admin.username}}"
+    password: "{{admin.password}}"
+    force_basic_auth: true
+    body_format: json
+    return_content: true
+  register: hub_execution_profile_res
+
+- name: Configure the hub environment settings
+  ansible.builtin.uri:
+    url: http://localhost:{{ ingress_port | default('9090', true) }}/api/v2/execution-profiles/execprofiles/{{hub_execution_profile_res.json.data[0]._id}}
+    method: PATCH
+    user: "{{admin.username}}"
+    password: "{{admin.password}}"
+    force_basic_auth: true
+    body_format: json
+    headers:
+      Content-Type: "application/json-patch+json"
+    body: |-
+      [{ "op": "add", "path": "/", "value": "environment"}, { "op": "add", "path": "/environment/PYTHONLIB", "value": "/usr/lib64/libpython3.6m.so.1.0"}, { "op": "add", "path": "/environment/R_HOME", "value":"/usr/lib64/R/"}, { "op": "add", "path": "/properties/directoryShortcuts/Shared", "value":"/shared_store/{user_id}"},{ "op": "add", "path": "/properties/intermediateFilesDir", "value":"/shared_store/{user_id}/imfiles"}]
+

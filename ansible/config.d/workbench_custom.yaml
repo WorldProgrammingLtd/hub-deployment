@@ -1,9 +1,0 @@
-workbench:
-  workflow:
-    intermediateFilesDir: /home/${userId}/workflowIntermediateFiles/
-
-  directoryShortcuts:
-  - name: Root
-    path: /
-  - name: Home
-    path: /home/${userId}
