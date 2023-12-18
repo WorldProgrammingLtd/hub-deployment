@@ -10,8 +10,8 @@
     hub_rpm: "slchub"
     airgapped: # Optional:
       slc_rpm_file: altairslc-5.24.0.3.564_ea3_release-1.x86_64.rpm
-      worker_rpm_file: slchub-worker-2023.5.0~alpha1^84-1_x86_64.rpm
-      hub_rpm_file: slchub-2023.5.0~alpha1^84-1_x86_64.rpm
+      worker_rpm_file: slchub-worker-2023.5.0~alpha1^106-1_x86_64.rpm
+      hub_rpm_file: slchub-2023.5.0~alpha1^106-1_x86_64.rpm
     bootstrap_params: "{{ '--nointernaltls' if ca_certs != 'internal' else ''}}"
   tasks:
   - name: Install tasks
