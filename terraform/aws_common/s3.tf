@@ -13,11 +13,6 @@ resource "aws_s3_bucket_versioning" "hubdata" {
   }
 }
 
-resource "aws_s3_bucket_acl" "hubdata" {
-  bucket = aws_s3_bucket.hubdata.id
-  acl    = "private"
-}
-
 resource "aws_s3_bucket_public_access_block" "hubdata" {
   bucket                  = aws_s3_bucket.hubdata.id
   block_public_acls       = true
