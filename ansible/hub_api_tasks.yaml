@@ -43,5 +43,9 @@
     headers:
       Content-Type: "application/json-patch+json"
     body: |-
-      [{ "op": "add", "path": "/", "value": "environment"}, { "op": "add", "path": "/environment/PYTHONLIB", "value": "/usr/lib64/libpython3.6m.so.1.0"}, { "op": "add", "path": "/environment/R_HOME", "value":"/usr/lib64/R/"}, { "op": "add", "path": "/properties/directoryShortcuts/Shared", "value":"/shared_store/{user_id}"},{ "op": "add", "path": "/properties/intermediateFilesDir", "value":"/shared_store/{user_id}/imfiles"}]
+      [{ "op": "add", "path": "/", "value": "environment"}, 
+       { "op": "add", "path": "/environment", "value": { "PYTHONLIB": "/usr/lib64/libpython3.6m.so.1.0" }}, 
+       { "op": "add", "path": "/environment/R_HOME", "value":"/usr/lib64/R/"}, 
+       { "op": "add", "path": "/properties/directoryShortcuts", "value": { "/Shared": "/shared_store/{user_id}" }},
+       { "op": "add", "path": "/properties/intermediateFilesDir", "value":"/shared_store/{user_id}/imfiles"}]
 
