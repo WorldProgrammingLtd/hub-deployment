@@ -24,6 +24,7 @@
   ansible.builtin.shell: |-
     hubctl slcinstall list | awk '{print $1}' | tail -n +3 \
     | grep /opt/altair/slc/2024
+  ignore_errors: yes
   register: a1_slc_install
   environment:
     ALM_HHWU: "TRUE"
