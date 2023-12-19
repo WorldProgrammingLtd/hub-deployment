@@ -79,6 +79,11 @@ resource "aws_instance" "hub" {
   # The name of our SSH keypair we created above.
   key_name = "${aws_key_pair.common-auth.id}"
 
+  # the size of the root ebs volume
+  root_block_device {
+    volume_size = 20
+  }
+
   # Our Security group to allow HTTP and SSH access
   vpc_security_group_ids = ["${aws_security_group.hub.id}"]
   subnet_id   = aws_subnet.amber-vms.id
