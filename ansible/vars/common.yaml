@@ -39,7 +39,7 @@ secret_ca_passphrase: tzAXOUCix9Db9CFBAthja
 
 # This is required incase of installing a newer python, so ansible will
 # continue to use the system default python
-ansible_python_interpreter: /usr/bin/python3
+ansible_python_interpreter: /usr/libexec/platform-python
 
 # Install optional components & packages:
 optional:
