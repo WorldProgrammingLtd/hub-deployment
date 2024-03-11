@@ -1,0 +1,25 @@
+licence:
+  # Path to a directory that contains Managed Licensing configuration information
+  # altairHHwuDirectory:
+
+  {% if license_type == 'a1' %}
+
+  useAltairLicensing: true
+
+  # A Token to connect to the Altair Managed Licensing Server
+  altairHHwuToken: "{{ auth_token }}"
+
+  {% endif %}
+
+  {% if license_type == 'alm' %}
+
+  useAltairLicensing: false
+
+  # Path to Altair licence file(s)/server(s)
+  # This may be a file location, or a server address
+  # e.g. /home/myuser/license.dat:6200@licserver
+
+  altairLicencePath: "{{ license_path }}"
+
+  {% endif %}
+

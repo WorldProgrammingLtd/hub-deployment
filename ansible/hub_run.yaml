@@ -8,4 +8,3 @@
   ansible.builtin.command: /usr/local/bin/hubctl service enable
 - name: Start hub
   ansible.builtin.command: /usr/local/bin/hubctl service start
-

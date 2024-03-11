@@ -1,0 +1,21 @@
+# SLC License:
+#
+# Here you can chooose AltairOne (a1) or ALM licensing (alm); if you have an
+# on-premise licensing server.
+#
+# * For a1 you need to supply an "auth code" generated from https://altairone.com
+#   and the ansible will generate an anyhost "auth token" for you:
+#   (e.g. $> $SLC_PATH/bin/almutil -a1auth -anyhost -code XXXXXXXX)
+#   Note: the "auth code" is only needed for the first run, after which the
+#   generated "auth token" is automatically found from your existing installation.
+# * For alm licensing you need to supply the license path to your ALM server
+#   instance in the format:
+#   PORT@HOST e.g. 6200@almserver.example.com
+#
+license:
+  # For Altair Units:
+  type: a1
+  auth_code: "XXXXXXXX"
+  # Alternatively, for License Manager:
+  # type: alm
+  # license_path: "6200@almserver.example.com"

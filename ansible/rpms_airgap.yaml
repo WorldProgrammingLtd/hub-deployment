@@ -14,8 +14,8 @@
     group: root
     mode: '0644'
   with_items:
-    - swhub_2.0.22.448-1_x86_64.rpm
-    - swhub-worker_2.0.22.448-1_x86_64.rpm
+    - "{{ airgapped.hub_rpm_file }}"
+    - "{{ airgapped.worker_rpm_file }}"
 - name: Copy SLC rpm
   ansible.builtin.copy:
     src: "rpms/{{ item }}"
@@ -24,7 +24,7 @@
     group: root
     mode: '0644'
   with_items:
-    - "{{ wps_rpm }}"
+    - "{{ airgapped.slc_rpm_file }}"
   when: "'workers' in group_names"
 - name: Create repo index
   ansible.builtin.shell: "createrepo --basedir={{ rpmsdirectory }} {{ rpmsdirectory }}"

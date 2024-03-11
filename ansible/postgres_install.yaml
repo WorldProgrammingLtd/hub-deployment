@@ -71,16 +71,19 @@
     ansible.builtin.command: systemctl restart postgresql-13
 
   - name: Create postgres hub user
-    ansible.builtin.command: sudo runuser -l postgres -c "psql -d postgres -c \"CREATE USER {{db_user}} WITH PASSWORD '{{db_password}}';\""
+    ansible.builtin.command: runuser -l postgres -c "psql -d postgres -c \"CREATE USER {{db_user}} WITH PASSWORD '{{db_password}}';\""
     ignore_errors: yes
+    become: true
 
   - name: Create postgres hub database
-    ansible.builtin.command: sudo runuser -l postgres -c "psql -d postgres -c \"create database {{db_name}};  \""
+    ansible.builtin.command: runuser -l postgres -c "psql -d postgres -c \"create database {{db_name}};  \""
     ignore_errors: yes
+    become: true
 
   - name: Grant access to hub database user
-    ansible.builtin.command: sudo runuser -l postgres -c "psql -d postgres -c \" GRANT CONNECT ON DATABASE {{db_name}} TO {{db_user}}; GRANT ALL ON DATABASE {{db_name}} to {{db_user}}; GRANT ALL ON ALL SEQUENCES IN SCHEMA PUBLIC TO {{db_user}}; GRANT ALL ON ALL FUNCTIONS IN SCHEMA PUBLIC TO {{db_user}}; ALTER DATABASE {{db_name}} OWNER TO {{db_user}};  \" "
+    ansible.builtin.command: runuser -l postgres -c "psql -d postgres -c \" GRANT CONNECT ON DATABASE {{db_name}} TO {{db_user}}; GRANT ALL ON DATABASE {{db_name}} to {{db_user}}; GRANT ALL ON ALL SEQUENCES IN SCHEMA PUBLIC TO {{db_user}}; GRANT ALL ON ALL FUNCTIONS IN SCHEMA PUBLIC TO {{db_user}}; ALTER DATABASE {{db_name}} OWNER TO {{db_user}};  \" "
     ignore_errors: yes
+    become: true
 
 
 

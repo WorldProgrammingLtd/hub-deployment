@@ -1,31 +1,95 @@
-- name: Copy SLC license
-  ansible.builtin.copy:
-    src: "license/setinit.wps"
-    dest: "/tmp"
-- name: License SLC
+- name: Check for existing SLC auth token (a1 auth)
+  ansible.builtin.shell: |-
+    cat ~/.altair_licensing/*/altair_hostedhwu.cfg 2>/dev/null | head -n 1 | cut -d'=' -f 2
+  register: existing_auth_result
+  when: license.type == 'a1'
+  changed_when: existing_auth_result.stdout | length > 0
+
+- ansible.builtin.debug:
+    msg: "Worker Auth Token: {{ existing_auth_result.stdout }}"
+
+- name: Generate SLC auth token (a1 auth)
+  ansible.builtin.shell: |-
+    /opt/altair/slc/2024/bin/almutil -a1auth -anyhost -code {{ license.auth_code }} \
+    | tail -n 1 | cut -d':' -f 2 | sed -e 's/^\s*//'
+  register: new_auth_result
+  failed_when: "'ERROR' in new_auth_result.stderr"
+  when: license.type == 'a1' and (existing_auth_result.stdout | length == 0) and (license.auth_code | length > 0)
+
+- name: Register auth token variable
+  ansible.builtin.set_fact:
+    auth_token: "{{ existing_auth_result.stdout | default('') + new_auth_result.stdout | default('') }}"
+
+- name: Check for existing SLC install (For AltairOne Units)
+  ansible.builtin.shell: |-
+    hubctl slcinstall list | awk '{print $1}' | tail -n +3 \
+    | grep /opt/altair/slc/2024
+  ignore_errors: yes
+  register: a1_slc_install
+  environment:
+    ALM_HHWU: "TRUE"
+    ALM_HHWU_TOKEN: "{{ auth_token }}"
+  when: license.type == 'a1'
+  become: true
+
+- name: Copy SLC install information (For AltairOne Units)
   ansible.builtin.command:
-    cmd: /opt/worldprogramming/wps-5/bin/wps -setinit /tmp/setinit.wps
-    creates: /var/lib/worldprogramming/WPS/5/setinit.dat
-- name: Copy SLC install information
-  ansible.builtin.copy:
-    src: "worker.config/slc_installs.yaml"
-    dest: "/opt/altair/swhub/etc/slc_installs.yaml"
+    cmd: "hubctl slcinstall add /opt/altair/slc/2024"
+  environment:
+    ALM_HHWU: "TRUE"
+    ALM_HHWU_TOKEN: "{{ auth_token }}"
+  when: license.type == 'a1' and (a1_slc_install.stdout | length == 0)
+  become: true
+
+- name: Check for existing SLC install (For ALM)
+  ansible.builtin.shell: |-
+    hubctl slcinstall list | awk '{print $1}' | tail -n +3 \
+    | grep /opt/altair/slc/2024
+  register: alm_slc_install
+  environment:
+    ALM_HHWU: "FALSE"
+    ALTAIR_LICENSE_PATH: "{{ license.license_path }}"
+  when: license.type == 'alm'
+  become: true
+
+- name: Copy SLC install information (For ALM)
+  ansible.builtin.command:
+    cmd: "hubctl slcinstall add /opt/altair/slc/2024"
+  environment:
+    ALM_HHWU: "FALSE"
+    ALTAIR_LICENSE_PATH: "{{ license.license_path }}"
+  when: license.type == 'alm' and (alm_slc_install.stdout | length == 0)
+  become: true
+
+- name: Copy nomad plugin config with licensing env
+  ansible.builtin.template:
+    src: templates/nomad_plugin.yaml.j2
+    dest: /opt/altair/slchub/etc/nomad_plugin.yaml
+    mode: 0644
+  vars:
+    license_type: "{{ license.type }}"
+    auth_token: "{{ auth_token }}"
+    license_path: "{{ license.license_path | default('') }}"
+
 - name: Copy nomad config
   ansible.builtin.copy:
     src: "worker.config/90-gc-config.hcl"
-    dest: "/opt/altair/swhub/etc/nomad.d/90-gc-config.hcl"
+    dest: "/opt/altair/slchub/etc/nomad.d/90-gc-config.hcl"
+
 - name: Create network config
   ansible.builtin.template:
     src: internalnetwork_custom.yaml.j2
-    dest: /opt/altair/swhub/etc/config.d/internalnetwork_custom.yaml
+    dest: /opt/altair/slchub/etc/config.d/internalnetwork_custom.yaml
     mode: 0644
+
 - name: Create hubctl symlink
   ansible.builtin.file:
-    src: /opt/altair/swhub/bin/hubctl
+    src: /opt/altair/slchub/bin/hubctl
     dest: /usr/local/bin/hubctl
     owner: root
     group: root
     state: link
+
 - name: Generate CSRs
   ansible.builtin.command: /usr/local/bin/hubctl generate csr
   when: ca_certs == "supplied" or ca_certs == "selfsigned"

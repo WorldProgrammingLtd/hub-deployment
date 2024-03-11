@@ -1,0 +1,24 @@
+# Common configuration settings related to
+# defining the connection to an azure blob store
+object_store:
+  type: azure
+
+  # The azure blob storage endpoint to connect to.
+  endpoint: {{ azure_storage_endpoint | regex_replace( '^https?://', '' ) }}
+
+  # The Azure Storage Account name to use
+  azureAccountName: {{ azure_storage_account_name }}
+
+  # The Primary/Secondary access key to the the blob store
+  azureAccountKey: {{ azure_storage_access_key }}
+
+  # The name of the container to use
+  containerName: {{ azure_storage_container_name }}
+
+  # The azure storage account region
+  region: {{ azure_storage_region }}
+
+  # Whether to connect insecurely. By default, a secure connection
+  # is made.
+  insecure: {{ azure_storage_insecure }}
+

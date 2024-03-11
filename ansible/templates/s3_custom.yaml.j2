@@ -1,18 +1,19 @@
-# Common configuration settings related to
-# defining the connection to an S3 compatible
-# object store
-s3:
+# Common configuration settings related to defining the
+# connection to an S3 compatible object store
+object_store:
+  type: s3
+
   # Whether to use IAM credentials to authenticate to S3.
-  useIam: {{ s3_useIam }}
+  useIam: {{ s3_use_iam }}
 
   # The S3 endpoint to connect to.
   endpoint: {{ s3_endpoint }}
 
   # The AWS Access Key ID to use to authenticate the connection
-  accessKeyId: {{ s3_accessKeyId if (s3_useIam == false) else "dummy_value" }}
+  accessKeyId: {{ s3_access_key_id if (s3_use_iam == false) else "dummy_value" }}
 
   # The AWS Secret Access Key to use to authenticate the connection
-  secretAccessKey: {{ s3_secretAccessKey if (s3_useIam == false) else "dummy_value" }}
+  secretAccessKey: {{ s3_secret_access_key if (s3_use_iam == false) else "dummy_value" }}
 
   # The AWS Session Token to use to authenticate the connection
   token:

@@ -1,4 +1,4 @@
 webdav:
   rootPaths:
   - /home
-  - /transfer
+  - /shared_store

@@ -1,0 +1,1 @@
+../azure_common/hub_vm.tf

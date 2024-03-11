@@ -1,5 +1,5 @@
 # hub-deployment
-Tools and scripts for deploying the WPS hub on baremetal
+Tools and scripts for deploying the SLC Hub on baremetal
 
 This consists of terraform to make the machines, followed by ansible to configure them.
 
