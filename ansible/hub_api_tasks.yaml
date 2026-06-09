@@ -19,7 +19,13 @@
     headers:
       Content-Type: "application/json-patch+json"
     body: |-
-      [{ "op": "add", "path": "/unixHomeDirectory", "value":"{{ admin.linux_home_dir }}"}, { "op": "add", "path":"/unixUserName", "value":"{{ admin.linux_username }}" }]
+      [
+        { "op": "add", "path": "/firstName", "value": "Hub" },
+        { "op": "add", "path": "/lastName", "value": "Administrator" },
+        { "op": "add", "path": "/displayName", "value": "Hub Administrator" },
+        { "op": "add", "path": "/unixHomeDirectory", "value": "{{ admin.linux_home_dir }}" },
+        { "op": "add", "path": "/unixUserName", "value": "{{ admin.linux_username }}" }
+      ]
   when: "(hub_res.json['unixUserName'] is not defined)"
 
 - name: Get hub excecution profile id

@@ -18,6 +18,15 @@ resource "acme_certificate" "hub" {
   account_key_pem          = acme_registration.reg.account_key_pem
   certificate_p12_password = var.acme_cert_password
 
+  # Azure DNS refuses non-recursive (RD=0) queries from arbitrary IPs, which
+  # is what LEGO uses for its authoritative propagation check. Disabling the
+  # authoritative check and using a public recursive resolver instead routes
+  # the check through RD=1 queries that Azure accepts from known resolvers.
+  disable_complete_propagation = true
+  recursive_nameservers        = ["8.8.8.8:53", "1.1.1.1:53"]
+
+  depends_on = [azurerm_dns_zone.zone]
+
   dns_challenge {
     provider = "azuredns"
     config = {

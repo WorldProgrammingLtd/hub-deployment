@@ -1,0 +1,48 @@
+- name: Read Keycloak HubSuperAdmin password
+  ansible.builtin.slurp:
+    src: /opt/altair/slchub/var/data/keycloak/admin.txt
+  register: kc_admin_pass_encoded
+  no_log: true
+
+- name: Get Keycloak admin token
+  ansible.builtin.uri:
+    url: "{{ 'https' if ca_certs == 'internal' else 'http' }}://127.0.0.1:8216/realms/master/protocol/openid-connect/token"
+    method: POST
+    body_format: form-urlencoded
+    validate_certs: no
+    body:
+      grant_type: password
+      client_id: admin-cli
+      username: HubSuperAdmin
+      password: "{{ kc_admin_pass_encoded.content | b64decode | trim }}"
+  register: kc_token_res
+  no_log: true
+
+- name: Find admin user in Keycloak
+  ansible.builtin.uri:
+    url: "{{ 'https' if ca_certs == 'internal' else 'http' }}://127.0.0.1:8216/admin/realms/slchub/users?username={{ admin.username | urlencode }}&exact=true"
+    headers:
+      Authorization: "Bearer {{ kc_token_res.json.access_token }}"
+    validate_certs: no
+  register: kc_user_res
+  no_log: true
+
+- name: Assert admin user was found in Keycloak
+  ansible.builtin.assert:
+    that: kc_user_res.json[0].id is defined
+    fail_msg: "No Keycloak user found matching '{{ admin.username }}'"
+
+- name: Set admin user password in Keycloak
+  ansible.builtin.uri:
+    url: "{{ 'https' if ca_certs == 'internal' else 'http' }}://127.0.0.1:8216/admin/realms/slchub/users/{{ kc_user_res.json[0].id }}/reset-password"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ kc_token_res.json.access_token }}"
+    validate_certs: no
+    body_format: json
+    body:
+      type: password
+      value: "{{ admin.password }}"
+      temporary: false
+    status_code: 204
+  no_log: true

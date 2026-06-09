@@ -1,9 +1,6 @@
 - name: Enable TLS now
   ansible.builtin.command: /usr/local/bin/hubctl internaltls server
   when: ca_certs == "supplied" or ca_certs == "selfsigned"
-- name: Run ldapsync
-  ansible.builtin.command: /usr/local/bin/hubctl ldapsync
-  when: ldap_enabled == "true"
 - name: Enable hub
   ansible.builtin.command: /usr/local/bin/hubctl service enable
 - name: Start hub
