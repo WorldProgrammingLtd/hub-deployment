@@ -1,48 +1,43 @@
-- name: Read Keycloak HubSuperAdmin password
-  ansible.builtin.slurp:
-    src: /opt/altair/slchub/var/data/keycloak/admin.txt
-  register: kc_admin_pass_encoded
+- name: Create temporary file for admin password
+  ansible.builtin.tempfile:
+    state: file
+    suffix: hubadminpw
+  register: admin_password_tempfile
   no_log: true
 
-- name: Get Keycloak admin token
-  ansible.builtin.uri:
-    url: "{{ 'https' if ca_certs == 'internal' else 'http' }}://127.0.0.1:8216/realms/master/protocol/openid-connect/token"
-    method: POST
-    body_format: form-urlencoded
-    validate_certs: no
-    body:
-      grant_type: password
-      client_id: admin-cli
-      username: HubSuperAdmin
-      password: "{{ kc_admin_pass_encoded.content | b64decode | trim }}"
-  register: kc_token_res
+- name: Write admin password to temporary file
+  ansible.builtin.copy:
+    content: "{{ admin.password }}"
+    dest: "{{ admin_password_tempfile.path }}"
+    mode: 0600
   no_log: true
 
-- name: Find admin user in Keycloak
-  ansible.builtin.uri:
-    url: "{{ 'https' if ca_certs == 'internal' else 'http' }}://127.0.0.1:8216/admin/realms/slchub/users?username={{ admin.username | urlencode }}&exact=true"
-    headers:
-      Authorization: "Bearer {{ kc_token_res.json.access_token }}"
-    validate_certs: no
-  register: kc_user_res
+- name: Create Hub admin user via hubctl
+  ansible.builtin.command:
+    argv:
+      - /usr/local/bin/hubctl
+      - admin
+      - create
+      - --username
+      - "{{ admin.username }}"
+      - --passwordfile
+      - "{{ admin_password_tempfile.path }}"
+      - --nomfa
+  register: hubctl_admin_create
+  failed_when:
+    - hubctl_admin_create.rc != 0
+    - "'already exists' not in hubctl_admin_create.stderr"
+  changed_when: hubctl_admin_create.rc == 0
   no_log: true
 
-- name: Assert admin user was found in Keycloak
-  ansible.builtin.assert:
-    that: kc_user_res.json[0].id is defined
-    fail_msg: "No Keycloak user found matching '{{ admin.username }}'"
+- name: Warn if Hub admin user already exists
+  ansible.builtin.debug:
+    msg: >
+      Hub admin user {{ admin.username }} already exists in Keycloak; skipping creation.
+      Its password was not modified - update it manually if admin.password has changed.
+  when: hubctl_admin_create.rc != 0
 
-- name: Set admin user password in Keycloak
-  ansible.builtin.uri:
-    url: "{{ 'https' if ca_certs == 'internal' else 'http' }}://127.0.0.1:8216/admin/realms/slchub/users/{{ kc_user_res.json[0].id }}/reset-password"
-    method: PUT
-    headers:
-      Authorization: "Bearer {{ kc_token_res.json.access_token }}"
-    validate_certs: no
-    body_format: json
-    body:
-      type: password
-      value: "{{ admin.password }}"
-      temporary: false
-    status_code: 204
-  no_log: true
+- name: Remove temporary admin password file
+  ansible.builtin.file:
+    path: "{{ admin_password_tempfile.path }}"
+    state: absent

@@ -140,6 +140,15 @@ resource "aws_lb_target_group" "hublb" {
   target_type      = "instance"
   port             = 9090
   vpc_id           =  "${aws_vpc.amber.id}"
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200-399"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
   tags = {
 	Name = "${var.prefix}-hub"
   }
