@@ -7,6 +7,9 @@
 - name: hub init
   ansible.builtin.include_tasks: hub_init.yaml
   when: "'hub' in group_names"
+- name: Keycloak init
+  ansible.builtin.include_tasks: keycloak_init_tasks.yaml
+  when: "'hub' in group_names"
 - name: Handle certificates
   ansible.builtin.include_tasks: certs.yaml
   when: "ca_certs != 'internal'"

@@ -40,12 +40,6 @@
     src: "config.d"
     dest: "/opt/altair/slchub/etc/"
 
-- name: Create admin user
-  ansible.builtin.template:
-    src: templates/adminpassword.yaml.j2
-    dest: /opt/altair/slchub/etc/bootstrap/adminpassword.yaml
-    mode: 0644
-
 - name: Create network config
   ansible.builtin.template:
     src: templates/internalnetwork_custom.yaml.j2

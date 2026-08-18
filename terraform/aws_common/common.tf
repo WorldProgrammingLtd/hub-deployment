@@ -99,7 +99,7 @@ data "aws_ami" "centos" {
 
   filter {
       name   = "name"
-      values = ["AlmaLinux OS 8.10*"]
+      values = ["AlmaLinux OS 9*"]
   }
 
   filter {

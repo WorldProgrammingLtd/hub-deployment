@@ -4,6 +4,7 @@
     - vars/ldap.yaml
     - vars/common.yaml
     - vars/license.yaml
+    - worker.config/slc_installs.yaml
   vars:
     bootstrap_params: "{{ '--nointernaltls' if ca_certs != 'internal' else ''}}"
   tasks:
